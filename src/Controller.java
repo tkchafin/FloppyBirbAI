@@ -20,12 +20,12 @@ class Controller implements MouseListener
 	public void update(){
 		int max = 0;
 		this.frame++;
-		System.out.print("FRAME: " + frame + "   -   ");
+		//System.out.print("FRAME: " + frame + "   -   ");
 		int temp;
 		ControlAction best = ControlAction.DO_NOTHING; //Default to DO_NOTHING
 		Model copy = new Model(this.model);
 		for (ControlAction action : ControlAction.values()){
-			temp = copy.evaluateAction(action, copy, 0, 7, 21);
+			temp = copy.evaluateAction(action, copy, 0);
 			System.out.print(action);
 			System.out.print("=" + temp + " - ");
 			if ( temp > max ){
@@ -46,24 +46,6 @@ class Controller implements MouseListener
 			this.model.onClick(3);
 			this.model.onClick(1);
 		}
-		
-		/*switch (best){
-		case DO_NOTHING:
-			//this.model.onClick(3);
-			break;
-		case FLAP:
-			//System.out.print("FLAAAP");
-			this.model.onClick(1);//left
-			break;
-		case THROW:
-			this.model.onClick(3);//right
-			break;
-		case FLAP_THROW:
-			this.model.onClick(1);
-			this.model.onClick(3);
-			break;
-			
-		}*/
 	}
 	
     public void mouseReleased(MouseEvent e) {    }

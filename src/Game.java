@@ -6,9 +6,10 @@ import javax.swing.Timer;
 public class Game extends JFrame implements ActionListener {
 	Model model;
 	Controller controller;
+
 	
 	public Game() throws Exception {
-		this.model = new Model(this);
+		this.model = new Model();
 		controller = new Controller(this.model);
 		View view = new View(this.model);
 		view.addMouseListener(controller);
@@ -30,5 +31,9 @@ public class Game extends JFrame implements ActionListener {
 
 	public static void main(String[] args) throws Exception {
 		new Game();
+	}
+	
+	public static void observeViewParams(){
+		
 	}
 }

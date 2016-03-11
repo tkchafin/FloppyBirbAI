@@ -5,24 +5,27 @@ import java.util.ListIterator;
 
 class Model
 {
-    Game game_ref;
+    View view_ref;
+    
 	LinkedList<Sprite> sprites; //ArrayList of sprite objects
     Bird bird_ref;
     Random rand; 
     int points; //Number of obstacles cleared
-    long seed; //To seed RNG
+    int maxD;//Maxmimum depth of decision tree
+    int thin; //Thinning of decision tree
+    int seed; //To seed RNG
     boolean end; //End model
     boolean start; //Start model
     boolean kill; //Kill sequence
     boolean quiet;
+    boolean params;
     ListIterator<Sprite> it;
     
 // How far to set back first tree
 
     
     //Default constructor, initialize member objects
-	Model(Game ref) {
-		this.game_ref = ref;
+	Model() {
 		try {
 			reset();
 		} catch (IOException e) {
@@ -38,6 +41,8 @@ class Model
 		this.points = that.points;
 		this.start = true;
 		this.end = that.end;
+		this.maxD = that.maxD;
+		this.thin = that.thin;
 		this.kill = that.kill;
 		this.sprites = new LinkedList<Sprite>();
 		this.it = this.sprites.listIterator();
@@ -65,7 +70,7 @@ class Model
 	
 	
 	public void update() {	
-		if (this.end == false){
+		if (this.end == false){			
 			Collections.sort(sprites);
 		    this.it = this.sprites.listIterator(); //Reset iterator
 			while (this.it.hasNext()){
@@ -98,8 +103,10 @@ class Model
 	
 	//Heuristic search of paths for called action
 	//depth=current depth; d=depth limit; k=how often to call recursion
-	int evaluateAction(ControlAction a, Model local, int depth, int k, int d){
+	int evaluateAction(ControlAction a, Model local, int depth){
 		int next = depth+1;
+		int d = this.maxD;
+		int k = this.thin;		
 		
 		//If max recursion depth
 		if (depth == d ){
@@ -139,7 +146,7 @@ class Model
 				int temp = 0;
 				//System.out.println("   Check paths   ");
 				for (ControlAction b : ControlAction.values()){
-					temp = evaluateAction(b, copy, next, k, d);	
+					temp = evaluateAction(b, copy, next);	
 					//System.out.print(b);
 					//System.out.print("="+temp+" - ");
 					if ( temp > best ){
@@ -149,7 +156,7 @@ class Model
 				//System.out.println("Returning " + best);
 				return best;
 			}else{
-				int ret = evaluateAction(ControlAction.DO_NOTHING, copy, next, k, d);
+				int ret = evaluateAction(ControlAction.DO_NOTHING, copy, next);
 				return ret;
 
 			}
@@ -157,13 +164,17 @@ class Model
 	}
 	
 	public void reset() throws IOException{
+		
 		this.seed = 678678;
 		this.rand = new Random(this.seed);
 		this.points = 0;
+		this.maxD = 21;
+		this.thin = 7;
 		this.start = false;
 		this.end = false;
 		this.kill = false;
 		this.quiet = false;
+		this.params = false;
 		this.sprites = new LinkedList<Sprite>();
 		this.sprites.add( new Bird(this));
 		this.sprites.add( new Tree(this));
@@ -179,5 +190,13 @@ class Model
 		if (bird_ref == null || !(bird_ref instanceof Bird)){
 			throw new IllegalArgumentException("Bird reference broken in Model.reset()!");
 		}
+	}
+	
+	public void setView(View ref){
+		this.view_ref = ref;
+	}
+	
+	public void setRandom(Long s){
+		this.rand = new Random(s);
 	}
 }

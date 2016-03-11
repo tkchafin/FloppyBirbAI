@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.File;
 import java.awt.Font;
 
-class View extends JPanel {
+public class View extends JPanel {
 	
 	Model model;
 	Image background;
@@ -25,7 +25,9 @@ class View extends JPanel {
 	JTextField enterS;
 	JLabel promptS; 
 	
-	boolean paramsRead;
+	int defaultD = 21;
+	int defaultK = 7;
+	long defaultS = 678678;
 
 	View(Model m) throws IOException {
 		
@@ -62,14 +64,13 @@ class View extends JPanel {
 		this.promptS.setBackground(Color.white);
 		this.promptS.setOpaque(true);
 		
+		//Incorporate components
 		this.add(promptK);
 		this.add(enterK);
 		this.add(promptD);
 		this.add(enterD);
 		this.add(promptS);
 		this.add(enterS);
-		
-		this.paramsRead = false;
 	}
 
 	public void paintComponent(Graphics g) {
@@ -77,6 +78,11 @@ class View extends JPanel {
         Font f = new Font(g.getFont().getFontName(), Font.BOLD, fontSize);
         g.setFont(f);
 		if (this.model.start == true){
+			this.setComponents(false);
+			if (this.model.params == false){
+				this.sendParams();
+				this.model.params = true;
+			}
 			g.drawImage(this.background, -10,-10,null); //Draw background
 			for (int i = 0; i <this.model.sprites.size(); i++){
 				this.model.sprites.get(i).draw(g); 
@@ -86,6 +92,7 @@ class View extends JPanel {
 		}else if (this.model.start == false && this.model.end == false){
 			g.drawImage(this.startMenu, -10, -10, null);
 		}else if (this.model.end == true){
+			this.setComponents(true);
 			g.drawImage(this.endMenu, -10,-10,null);
 			g.drawString("Your final score:", 170, 370);
 			g.drawString(Integer.toString(this.model.points), 320, 370);
@@ -97,4 +104,55 @@ class View extends JPanel {
 			}
 		}
 	}
+	
+	public void setComponents(boolean set){
+		this.promptK.setVisible(set);
+		this.enterK.setVisible(set);
+		this.promptD.setVisible(set);
+		this.enterD.setVisible(set);
+		this.promptS.setVisible(set);
+		this.enterS.setVisible(set);
+	}
+	
+	public int getK(){
+		String text = this.enterK.getText();
+		int k = Integer.parseInt(text);
+		if (k > 0){
+			return k; 
+		}else{
+			return this.defaultK;
+		} 
+	}
+	
+	public long getS(){
+		String text = this.enterS.getText();
+		long s = Long.parseLong(text);
+		if (s > 0){
+			return s; 
+		}else{
+			return this.defaultS;
+		} 
+	}
+	
+	public int getD(){
+		String text = this.enterD.getText();
+		int d = Integer.parseInt(text);
+		if (d > 0){
+			return d; 
+		}else{
+			return this.defaultD;
+		}
+	}
+	
+	public void sendParams(){
+		this.model.maxD = this.getD();
+		this.model.thin = this.getK();
+		this.model.setRandom(this.getS());
+	}
 }
+
+
+
+
+
+
